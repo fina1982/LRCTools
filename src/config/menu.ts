@@ -26,14 +26,14 @@ export const menuConfig: MenuItem[] = [
     path: '/fetchxml',
     children: [{ label: 'FetchXml转换SQL', path: '/fetchxml/fetchtosql', name: 'FetchToSql' }],
   },
-  {
-    label: '谁是卧底',
-    path: '/undercover',
-    children: [{ label: '开始游戏', path: '/undercover/game', name: 'UnderCoverGame' }],
-  },
   // {
   //   label: '二维码相关',
   //   path: '/qrcode',
   //   children: [{ label: '二维码生成', path: '/qrcode/func1' }],
   // },
+  {
+    label: '谁是卧底',
+    path: '/undercover',
+    children: [{ label: '开始游戏', path: '/undercover/game', name: 'UnderCoverGame' }],
+  },
 ]

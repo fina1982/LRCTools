@@ -614,9 +614,7 @@ const parseSelectFields = (segment: string, baseAlias: string): ParsedSelectSegm
       throw new Error(`暂不支持非主实体通配符：${trimmed}`)
     }
 
-    const aliasMatch = trimmed.match(/^(.*?)\s+AS\s+([A-Za-z_][\w]*)$/i)
-    const expression = (aliasMatch?.[1] || trimmed).trim()
-    const alias = aliasMatch?.[2]
+    const { expression, alias } = parseSelectFieldExpressionAndAlias(trimmed)
 
     const aggregateMatch = expression.match(/^(COUNT|SUM|AVG|MIN|MAX)\((.+)\)$/i)
     if (aggregateMatch) {
@@ -646,6 +644,30 @@ const parseSelectFields = (segment: string, baseAlias: string): ParsedSelectSegm
   return {
     allAttributes,
     fields,
+  }
+}
+
+function parseSelectFieldExpressionAndAlias(value: string) {
+  const aliasPatterns = [
+    /^(.*?)\s+AS\s+'([A-Za-z_][\w]*)'$/i,
+    /^(.*?)\s+AS\s+"([A-Za-z_][\w]*)"$/i,
+    /^(.*?)\s+AS\s+\[([A-Za-z_][\w]*)\]$/i,
+    /^(.*?)\s+AS\s+([A-Za-z_][\w]*)$/i,
+  ]
+
+  for (const pattern of aliasPatterns) {
+    const match = value.match(pattern)
+    if (match) {
+      return {
+        expression: requireCapturedValue(match[1], 'SELECT 字段表达式').trim(),
+        alias: requireCapturedValue(match[2], 'SELECT 字段别名').trim(),
+      }
+    }
+  }
+
+  return {
+    expression: value.trim(),
+    alias: undefined as string | undefined,
   }
 }
 

@@ -1,22 +1,38 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { menuConfig } from '@/config/menu'
 import { ArrowRight } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
-const goFirst = (index: number) => {
-  const first = menuConfig[index]?.children?.[0]
-  if (!first) return
-  if (first.name) router.push({ name: first.name })
-  else router.push(first.path)
+const goCard = (routePath: string) => {
+  router.push(routePath)
 }
 
 const cards = [
-  { title: 'Json相关', desc: 'JSON 格式化、压缩、校验、转换等工具', accent: '#5B9BF5' },
-  { title: 'FetchXml转换', desc: 'FetchXml 与其他格式互转工具', accent: '#409EFF' },
-  { title: '字符串相关', desc: '字符串编码、加密、替换、统计等工具', accent: '#67B3F5' },
-  { title: '谁是卧底', desc: '适合聚会的本地传手机玩法，移动端优先', accent: '#f08a5d' },
+  {
+    title: 'Json相关',
+    desc: 'JSON 格式化、压缩、校验、转换等工具',
+    accent: '#5B9BF5',
+    routePath: '/json/jsonformatting',
+  },
+  {
+    title: 'FetchXml转换',
+    desc: 'FetchXml 与其他格式互转工具',
+    accent: '#409EFF',
+    routePath: '/fetchxml/fetchtosql',
+  },
+  {
+    title: '字符串相关',
+    desc: '字符串大小写转换、统计等工具',
+    accent: '#67B3F5',
+    routePath: '/string/stringformatting',
+  },
+  {
+    title: '谁是卧底',
+    desc: '适合聚会的本地传手机玩法，移动端优先',
+    accent: '#f08a5d',
+    routePath: '/undercover/game',
+  },
 ]
 </script>
 
@@ -27,8 +43,8 @@ const cards = [
       <p class="hero-sub">个人工具栏 · 轻量高效</p>
     </div>
     <el-row :gutter="20" class="card-row">
-      <el-col v-for="(c, i) in cards" :key="c.title" :xs="24" :sm="12" :md="6">
-        <el-card class="tool-card" shadow="hover" @click="goFirst(i)">
+      <el-col v-for="c in cards" :key="c.title" :xs="24" :sm="12" :md="6">
+        <el-card class="tool-card" shadow="hover" @click="goCard(c.routePath)">
           <template #header>
             <div class="card-header">
               <span class="card-accent" :style="{ backgroundColor: c.accent }"></span>

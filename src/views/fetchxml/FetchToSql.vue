@@ -2,22 +2,25 @@
 import { computed, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Codemirror } from 'vue-codemirror'
+import { EditorState } from '@codemirror/state'
 import {
   CopyDocument as CopyDocumentIcon,
   Delete as DeleteIcon,
   Refresh as RefreshIcon,
+  Select as SelectIcon,
   Switch as SwitchIcon,
 } from '@element-plus/icons-vue'
 import { convertContent, type ConvertDirection, type ConvertResult } from './fetchXmlSqlConverter'
 
 type ResultType = 'info' | 'success' | 'error'
 
-const direction = ref<ConvertDirection>('fetchxml-to-sql')
+const direction = ref<ConvertDirection>('sql-to-fetchxml')
 const inputText = ref('')
 const outputText = ref('')
 const resultType = ref<ResultType>('info')
 const resultMessage = ref('请选择转换方向并输入内容后点击“转换”。')
-const editorExtensions: [] = []
+const inputEditorExtensions: [] = []
+const outputEditorExtensions = [EditorState.readOnly.of(true)]
 
 const isFetchToSql = computed(() => direction.value === 'fetchxml-to-sql')
 const inputTitle = computed(() => (isFetchToSql.value ? 'FetchXml 输入' : 'SQL 输入'))
@@ -77,8 +80,8 @@ const handleClear = () => {
   resetMessage()
 }
 
-const toggleDirection = () => {
-  direction.value = isFetchToSql.value ? 'sql-to-fetchxml' : 'fetchxml-to-sql'
+const toggleDirection = (value: ConvertDirection) => {
+  direction.value = value
   outputText.value = ''
   resetMessage()
 }
@@ -103,10 +106,16 @@ resetMessage()
             </div>
           </div>
           <div class="toolbar">
-            <el-button type="primary" @click="handleConvert">
-              <el-icon><RefreshIcon /></el-icon>
-              <span>{{ convertButtonText }}</span>
+            <el-button type="primary" @click="toggleDirection('fetchxml-to-sql')">
+              <el-icon><SelectIcon /></el-icon>
+              <span>FetchXml -> SQL</span>
             </el-button>
+
+            <el-button type="primary" @click="toggleDirection('sql-to-fetchxml')">
+              <el-icon><SelectIcon /></el-icon>
+              <span>SQL -> FetchXml</span>
+            </el-button>
+
             <el-button @click="handleCopy">
               <el-icon><CopyDocumentIcon /></el-icon>
               <span>复制</span>
@@ -125,7 +134,7 @@ resetMessage()
           <div class="editor-shell">
             <Codemirror
               v-model="inputText"
-              :extensions="editorExtensions"
+              :extensions="inputEditorExtensions"
               :style="{ height: '350px' }"
               :placeholder="inputPlaceholder"
               class="code-editor"
@@ -134,23 +143,25 @@ resetMessage()
         </section>
 
         <div class="switcher-wrap">
-          <el-button circle type="primary" class="switcher-button" @click="toggleDirection">
-            <el-icon><SwitchIcon /></el-icon>
+          <el-button type="primary" @click="handleConvert">
+            <!-- <el-icon><SelectIcon /></el-icon> -->
+            <span>生成</span>
           </el-button>
-          <span class="switcher-text">切换方向</span>
         </div>
 
         <section class="panel">
           <div class="panel-label">
             <span>{{ outputTitle }}</span>
-            <el-tag size="small" type="info">只读</el-tag>
+            <div class="panel-label-tags">
+              <el-tag size="small" type="info">只读</el-tag>
+              <el-tag size="small" effect="plain">支持 Ctrl+A / Ctrl+C</el-tag>
+            </div>
           </div>
           <div class="editor-shell is-readonly">
             <Codemirror
               v-model="outputText"
-              :extensions="editorExtensions"
+              :extensions="outputEditorExtensions"
               :style="{ height: '350px' }"
-              :disabled="true"
               :placeholder="outputPlaceholder"
               class="code-editor"
             />
@@ -236,6 +247,12 @@ resetMessage()
   font-size: 13px;
   color: #606266;
   font-weight: 500;
+}
+
+.panel-label-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .editor-shell {
