@@ -40,7 +40,7 @@ const cards = [
   <div class="home-wrap">
     <div class="hero">
       <h1 class="hero-title">欢迎使用 LRCTools</h1>
-      <p class="hero-sub">个人工具栏 · 轻量高效</p>
+      <p class="hero-sub">个人工具栏 · 轻量高效 v1.0</p>
     </div>
     <el-row :gutter="20" class="card-row">
       <el-col v-for="c in cards" :key="c.title" :xs="24" :sm="12" :md="6">
@@ -54,7 +54,9 @@ const cards = [
           <p class="card-desc">{{ c.desc }}</p>
           <div class="card-footer">
             <span>开始使用</span>
-            <el-icon><ArrowRight /></el-icon>
+            <el-icon>
+              <ArrowRight />
+            </el-icon>
           </div>
         </el-card>
       </el-col>
